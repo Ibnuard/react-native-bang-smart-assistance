@@ -10,10 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/voice": "^1.1.9",
     "react": "16.13.1",
     "react-native": "0.63.4",
-    "react-native-tts": "^3.2.0",
-    "react-native-voice": "^0.3.0"
+    "react-native-tts": "^3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

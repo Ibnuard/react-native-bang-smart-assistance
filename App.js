@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, TouchableHighlight } from 'react-native'
-import Voice from 'react-native-voice'
+import Voice from '@react-native-community/voice'
 import Tts from 'react-native-tts'
 
 const App = () => {
@@ -8,10 +8,8 @@ const App = () => {
   const [voiceStatus, setVoiceStatus] = React.useState('Tidur')
   const [commandText, setCommandText] = React.useState('')
 
-  Voice._onSpeechStart(onSpeechStartHandler)
-  Voice._onSpeechEnd(onSpeechEndHandler)
-  Voice._onSpeechResults(onSpeechResultHandler)
   Tts.setDefaultLanguage('id-ID')
+  Tts.setDefaultVoice('id-id-x-idd-local')
   Tts.setDefaultRate(.52)
   Tts.setDefaultPitch(1)
 
@@ -23,8 +21,9 @@ const App = () => {
     setVoiceStatus('Suara didengarkan!')
   }
 
-  function onSpeechResultHandler(result) {
-    setCommandText(result.value[0])
+  async function onSpeechResultHandler(result) {
+    await setCommandText(result.value[0])
+    commandText !== 'tidak ada perintah' ? doAnalytic() : null
   }
 
   function onStartButtonPress(e) {
@@ -36,7 +35,20 @@ const App = () => {
     Tts.stop()
   }
 
+  function doAnalytic() {
+    console.log('analisa ada ' + commandText)
+    Tts.speak('Perintah anda adalah : ' + commandText)
+  }
+
+  console.log('vs : ' + voiceStatus)
+
   React.useEffect(() => {
+
+    Voice.onSpeechStart = onSpeechStartHandler
+    Voice.onSpeechEnd = onSpeechEndHandler
+    Voice.onSpeechResults = onSpeechResultHandler
+
+
     Tts.addEventListener(
       'tts-start',
       (_event) => setTtsStatus('started')
@@ -53,6 +65,7 @@ const App = () => {
     //Tts.speak('Halo, ini adalah Bang, Asisten pribadi anda. Katakan Bang!, lalu katakan perintah anda')
 
     return () => {
+      Voice.destroy().then(Voice.removeAllListeners);
       Tts.removeEventListener(
         'tts-start',
         (_event) => setTtsStatus('started')
